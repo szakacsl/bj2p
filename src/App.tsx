@@ -1,8 +1,16 @@
 import "./App.css";
-import React from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import HomePage from "./Pages/Home/HomePage";
 
 const App = () => {
-  return <div> Alma projekt </div>;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
+  );
 };
 
 export default App;
