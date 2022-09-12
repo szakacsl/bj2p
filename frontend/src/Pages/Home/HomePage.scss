@@ -1,0 +1,18 @@
+.homepage {
+  padding: 1rem 2rem;
+
+  .homepage__button {
+    padding: 1rem 2rem;
+    width: 50%;
+    height: 10rem;
+    border-radius: 10px;
+    border: 3px solid;
+    left: 25%;
+    text-align: center;
+    position: absolute;
+
+    Button {
+      padding: 1rem 2rem;
+    }
+  }
+}
