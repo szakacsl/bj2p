@@ -1,4 +1,5 @@
 import IDealerData from "../data/Dealer/DealerData";
+import { GameStateEnum } from "../data/Player/GameStateEnum";
 import IPlayerData from "../data/Player/PlayerData";
 import getGeneratedCardNumbers from "./randomCard";
 
@@ -18,25 +19,22 @@ export function checkGetNewCard(cards: number) {
   }
 }
 
-export function checkFirstCardsWins(
+export function checkWinner(
   player: IPlayerData,
   setPlayer: (player: IPlayerData) => void,
   dealer: IDealerData,
   setDealer: (dealer: IDealerData) => void
 ) {
   if (player.cards < dealer.cards) {
-    resetDealer(dealer, setDealer);
-    setPlayerLost(player, setPlayer);
+    setPlayer({...player, gameState: GameStateEnum.LOOSE})
     alert("YOU LOST THIS ROUND func");
   }
   if (player.cards === dealer.cards) {
-    resetDealer(dealer, setDealer);
-    setPlayerDraw(player, setPlayer);
+    setPlayer({...player, gameState: GameStateEnum.DRAW})
     alert("YOU DRAW THIS ROUND func");
   }
   if (player.cards > dealer.cards) {
-    resetDealer(dealer, setDealer);
-    setPlayerWon(player, setPlayer);
+    setPlayer({...player, gameState: GameStateEnum.WIN})
     alert("YOU WON THIS ROUND func");
   }
 }
@@ -48,7 +46,7 @@ export function setPlayerWon(
   setPlayer({
     ...player,
     money: player.money + player.bet * 1.5,
-    cards: getGeneratedCardNumbers() + getGeneratedCardNumbers(),
+    cards: 0,
     bet: 0,
   });
 }
@@ -60,7 +58,7 @@ export function setPlayerDraw(
   setPlayer({
     ...player,
     money: player.money + player.bet,
-    cards: getGeneratedCardNumbers() + getGeneratedCardNumbers(),
+    cards: 0,
     bet: 0,
   });
 }
@@ -71,8 +69,8 @@ export function setPlayerLost(
 ) {
   setPlayer({
     ...player,
-    money: player.money - player.bet,
-    cards: getGeneratedCardNumbers() + getGeneratedCardNumbers(),
+    money: player.money,
+    cards: 0,
     bet: 0,
   });
 }

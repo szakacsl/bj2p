@@ -2,12 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button, Divider } from "semantic-ui-react";
 
-import "./HomePage.scss";
+import "./WaitingRoom.scss";
 
-const HomePage = () => {
+const WaitingRoom = () => {
   return (
-    <nav className="homepage">
-      <div className="homepage__button">
+    <nav className="waitingroom">
+      <div className="waitingroom__button">
         <Divider />
         <Link to={"/game"}>
           <Button positive>Single Player</Button>
@@ -21,4 +21,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default WaitingRoom;

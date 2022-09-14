@@ -1,30 +1,46 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Grid, Icon, Input, Segment } from "semantic-ui-react";
 import Dealer from "../../Components/Dealer/Dealer";
 import Player from "../../Components/Player/Player";
 import IDealerData, { NewIDealerData } from "../../data/Dealer/DealerData";
+import { GameStateEnum } from "../../data/Player/GameStateEnum";
 import IPlayerData, { NewIPlayerData } from "../../data/Player/PlayerData";
 import {
   checkCardsAreLosing,
-  checkFirstCardsWins,
   checkGetNewCard,
+  checkWinner,
   resetDealer,
   resetGame,
   setDealerForGame,
+  setPlayerDraw,
   setPlayerForGame,
   setPlayerLost,
   setPlayerWon,
 } from "../../util/gameState";
 import getGeneratedCardNumbers from "../../util/randomCard";
-import "./Game.scss";
+import "./SinglePlayer.scss";
 
-const Game = () => {
+const SinglePlayer = () => {
   const [player, setPlayer] = useState<IPlayerData>(NewIPlayerData);
   const [dealer, setDealer] = useState<IDealerData>(NewIDealerData);
   const [input, setInput] = useState<string>("");
   const [finalCardCheck, setFinalCardCheck] = useState<boolean>(false);
   const [turn, setTurn] = useState<number>(2);
+  const [nextRound, setNextRound] = useState<boolean>(false);
+
+  const handleClickNextRoundButton = () => {
+    setNextRound(false);
+    resetDealer(dealer, setDealer);
+    switch (player.gameState) {
+      case GameStateEnum.WIN:
+        return setPlayerWon(player, setPlayer);
+      case GameStateEnum.DRAW:
+        return setPlayerDraw(player, setPlayer);
+      case GameStateEnum.LOOSE:
+        return setPlayerLost(player, setPlayer);
+    }
+  };
 
   const handleClickAddMoneyButton = () => {
     const moneyToAdd = Number.parseInt(input);
@@ -54,34 +70,37 @@ const Game = () => {
   };
 
   useEffect(() => {
-    if (checkCardsAreLosing(player.cards)) {
-      setTurn(turn - 1);
-      setFinalCardCheck(false);
-      resetDealer(dealer, setDealer);
-      setPlayerLost(player, setPlayer);
-      alert("YOU LOST THIS ROUND");
-    } else {
-      if (checkCardsAreLosing(dealer.cards)) {
+    if (!nextRound) {
+      if (checkCardsAreLosing(player.cards)) {
         setTurn(turn - 1);
         setFinalCardCheck(false);
-        resetDealer(dealer, setDealer);
-        setPlayerWon(player, setPlayer);
-        alert("YOU WON THIS ROUND");
+        setPlayer({ ...player, gameState: GameStateEnum.LOOSE });
+        setNextRound(true);
+        alert("YOU LOST THIS ROUND");
       } else {
-        if (finalCardCheck) {
-          setFinalCardCheck(false);
+        if (checkCardsAreLosing(dealer.cards)) {
           setTurn(turn - 1);
-          checkFirstCardsWins(player, setPlayer, dealer, setDealer);
-        }
-        if (turn === 0) {
-          resetGame(player, setPlayer, dealer, setDealer, setTurn);
-          alert("END OF THE GAME");
-          window.history.pushState(null, "New Page Title", "/");
-          window.location.reload();
+          setFinalCardCheck(false);
+          setPlayer({ ...player, gameState: GameStateEnum.WIN });
+          setNextRound(true);
+          alert("YOU WON THIS ROUND");
+        } else {
+          if (finalCardCheck) {
+            setFinalCardCheck(false);
+            setTurn(turn - 1);
+            checkWinner(player, setPlayer, dealer, setDealer);
+            setNextRound(true);
+          }
+          if (turn === 0) {
+            resetGame(player, setPlayer, dealer, setDealer, setTurn);
+            alert("END OF THE GAME");
+            window.history.pushState(null, "New Page Title", "/");
+            window.location.reload();
+          }
         }
       }
     }
-  }, [player, dealer, finalCardCheck, turn]);
+  }, [player, dealer, finalCardCheck, turn, nextRound]);
 
   return (
     <div className="game__window">
@@ -103,10 +122,20 @@ const Game = () => {
           <Grid.Column width={8}>
             <Segment>
               <div className="game__block">
-                <br></br>
                 <Grid.Row>
                   <Button
-                    disabled={player.bet > 0 ? false : true}
+                    disabled={nextRound ? false : true}
+                    icon
+                    labelPosition="left"
+                    onClick={handleClickNextRoundButton}
+                  >
+                    Next round
+                    <Icon name="angle double right" />
+                  </Button>
+                </Grid.Row>
+                <Grid.Row>
+                  <Button
+                    disabled={player.bet > 0 && !nextRound ? false : true}
                     icon
                     labelPosition="left"
                     onClick={handleClickStandButton}
@@ -115,10 +144,9 @@ const Game = () => {
                     <Icon name="hand paper outline" />
                   </Button>
                 </Grid.Row>
-                <br></br>
                 <Grid.Row>
                   <Button
-                    disabled={player.bet > 0 ? false : true}
+                    disabled={player.bet > 0 && !nextRound ? false : true}
                     icon
                     labelPosition="left"
                     onClick={handleClickHitButton}
@@ -153,11 +181,6 @@ const Game = () => {
                 </Grid.Row>
               </div>
             </Segment>
-            <Segment>
-              <div className="game__block">
-                <Player player={player}></Player>
-              </div>
-            </Segment>
           </Grid.Column>
         </Grid>
       </div>
@@ -165,4 +188,4 @@ const Game = () => {
   );
 };
 
-export default Game;
+export default SinglePlayer;

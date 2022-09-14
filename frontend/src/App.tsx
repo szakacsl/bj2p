@@ -1,7 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "./Pages/Home/HomePage";
-import Game from "./Pages/Game/Game";
+import Game from "./Pages/SinglePlayer/SinglePlayer";
 import HeaderBar from "./Pages/HeaderBar/HeaderBar";
 import Exercise from "./Pages/Exercise";
 
