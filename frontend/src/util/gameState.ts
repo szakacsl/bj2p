@@ -26,16 +26,13 @@ export function checkWinner(
   setDealer: (dealer: IDealerData) => void
 ) {
   if (player.cards < dealer.cards) {
-    setPlayer({...player, gameState: GameStateEnum.LOOSE})
-    alert("YOU LOST THIS ROUND func");
+    setPlayer({ ...player, gameState: GameStateEnum.LOOSE });
   }
   if (player.cards === dealer.cards) {
-    setPlayer({...player, gameState: GameStateEnum.DRAW})
-    alert("YOU DRAW THIS ROUND func");
+    setPlayer({ ...player, gameState: GameStateEnum.DRAW });
   }
   if (player.cards > dealer.cards) {
-    setPlayer({...player, gameState: GameStateEnum.WIN})
-    alert("YOU WON THIS ROUND func");
+    setPlayer({ ...player, gameState: GameStateEnum.WIN });
   }
 }
 

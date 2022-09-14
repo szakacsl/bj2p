@@ -76,14 +76,12 @@ const SinglePlayer = () => {
         setFinalCardCheck(false);
         setPlayer({ ...player, gameState: GameStateEnum.LOOSE });
         setNextRound(true);
-        alert("YOU LOST THIS ROUND");
       } else {
         if (checkCardsAreLosing(dealer.cards)) {
           setTurn(turn - 1);
           setFinalCardCheck(false);
           setPlayer({ ...player, gameState: GameStateEnum.WIN });
           setNextRound(true);
-          alert("YOU WON THIS ROUND");
         } else {
           if (finalCardCheck) {
             setFinalCardCheck(false);
@@ -93,7 +91,6 @@ const SinglePlayer = () => {
           }
           if (turn === 0) {
             resetGame(player, setPlayer, dealer, setDealer, setTurn);
-            alert("END OF THE GAME");
             window.history.pushState(null, "New Page Title", "/");
             window.location.reload();
           }

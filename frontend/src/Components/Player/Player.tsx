@@ -1,6 +1,6 @@
 import IPlayerData from "../../data/Player/PlayerData";
 
-interface IPlayerProps{
+interface IPlayerProps {
   player: IPlayerData | undefined;
 }
 

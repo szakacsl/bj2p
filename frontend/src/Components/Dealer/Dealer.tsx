@@ -8,8 +8,6 @@ interface IDealerProps {
 const Player: React.FC<IDealerProps> = (props: IDealerProps) => {
   const { dealer } = props;
 
-  
-
   return (
     <>
       <h3>Dealer</h3>

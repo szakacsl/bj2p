@@ -14,7 +14,7 @@ export const NewIPlayerData: IPlayerData = {
   cards: 0,
   money: 1000,
   bet: 0,
-  gameState: GameStateEnum.DRAW
+  gameState: GameStateEnum.DRAW,
 };
 
 export default IPlayerData;
