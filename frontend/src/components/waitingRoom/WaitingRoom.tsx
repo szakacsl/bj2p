@@ -42,7 +42,7 @@ const WaitingRoom: React.FC<IWaitingRoomProps> = (props: IWaitingRoomProps) => {
       joinRoom();
     }
     // console.log(room);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room]);
 
   return (

@@ -130,7 +130,7 @@ const MultiPlayerGame: React.FC<IMultiPlayerProps> = (
       setOtherDealer(data.dealer);
     });
     sendPlayerData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player, finalCardCheck, turn, socket]);
 
   return (
