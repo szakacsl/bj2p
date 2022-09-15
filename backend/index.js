@@ -4,7 +4,14 @@ import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 
+import { fileURLToPath } from "url";
+import path, { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 app.use(cors());
+app.use(express.static(path.join(__dirname + "/public")));
 
 const server = http.createServer(app);
 
