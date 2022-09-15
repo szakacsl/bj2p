@@ -1,4 +1,4 @@
-import getCardNumbers from "../../util/randomCard";
+import getCardNumbers from "../../util/RandomCard";
 
 interface IDealerData {
   cards: number;

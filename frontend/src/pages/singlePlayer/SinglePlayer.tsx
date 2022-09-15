@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Grid, Icon, Input, Segment } from "semantic-ui-react";
-import Dealer from "../../Components/Dealer/Dealer";
-import Player from "../../Components/Player/Player";
-import IDealerData, { NewIDealerData } from "../../data/Dealer/DealerData";
-import { GameStateEnum } from "../../data/Player/GameStateEnum";
-import IPlayerData, { NewIPlayerData } from "../../data/Player/PlayerData";
+import Dealer from "../../components/dealer/Dealer";
+import Player from "../../components/player/Player";
+import IDealerData, { NewIDealerData } from "../../data/dealer/DealerData";
+import { GameStateEnum } from "../../data/player/GameStateEnum";
+import IPlayerData, { NewIPlayerData } from "../../data/player/PlayerData";
 import {
   checkCardsAreLosing,
   checkGetNewCard,
@@ -17,8 +17,8 @@ import {
   setPlayerForGame,
   setPlayerLost,
   setPlayerWon,
-} from "../../util/gameState";
-import getGeneratedCardNumbers from "../../util/randomCard";
+} from "../../util/GameState";
+import getGeneratedCardNumbers from "../../util/RandomCard";
 import "./SinglePlayer.scss";
 
 const SinglePlayer = () => {
@@ -93,6 +93,7 @@ const SinglePlayer = () => {
             resetGame(player, setPlayer, dealer, setDealer, setTurn);
             window.history.pushState(null, "New Page Title", "/");
             window.location.reload();
+            alert("GAME OVER");
           }
         }
       }

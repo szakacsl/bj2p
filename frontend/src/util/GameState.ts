@@ -1,7 +1,7 @@
-import IDealerData from "../data/Dealer/DealerData";
-import { GameStateEnum } from "../data/Player/GameStateEnum";
-import IPlayerData from "../data/Player/PlayerData";
-import getGeneratedCardNumbers from "./randomCard";
+import IDealerData from "../data/dealer/DealerData";
+import { GameStateEnum } from "../data/player/GameStateEnum";
+import IPlayerData from "../data/player/PlayerData";
+import getGeneratedCardNumbers from "./RandomCard";
 
 export function checkCardsAreLosing(cards: number) {
   if (cards > 21) {

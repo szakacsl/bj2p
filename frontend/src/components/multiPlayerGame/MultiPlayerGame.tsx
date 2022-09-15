@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Grid, Icon, Input, Segment } from "semantic-ui-react";
-import Dealer from "../../Components/Dealer/Dealer";
-import Player from "../../Components/Player/Player";
-import IDealerData, { NewIDealerData } from "../../data/Dealer/DealerData";
-import IPlayerData, { NewIPlayerData } from "../../data/Player/PlayerData";
+import Dealer from "../dealer/Dealer";
+import Player from "../player/Player";
+import IDealerData, { NewIDealerData } from "../../data/dealer/DealerData";
+import { GameStateEnum } from "../../data/player/GameStateEnum";
+import IPlayerData, { NewIPlayerData } from "../../data/player/PlayerData";
 import {
   checkCardsAreLosing,
   checkGetNewCard,
@@ -12,19 +13,49 @@ import {
   resetDealer,
   resetGame,
   setDealerForGame,
+  setPlayerDraw,
   setPlayerForGame,
   setPlayerLost,
   setPlayerWon,
-} from "../../util/gameState";
-import getGeneratedCardNumbers from "../../util/randomCard";
-import "./MultiPlayer.scss";
+} from "../../util/GameState";
+import getGeneratedCardNumbers from "../../util/RandomCard";
+import "./MultiPlayerGame.scss";
+import { Socket } from "socket.io-client";
 
-const MultiPlayer = () => {
+interface IMultiPlayerProps {
+  socket: Socket;
+  room: string;
+}
+
+const MultiPlayerGame: React.FC<IMultiPlayerProps> = (
+  props: IMultiPlayerProps
+) => {
+  const { socket, room } = props;
   const [player, setPlayer] = useState<IPlayerData>(NewIPlayerData);
+  const [otherPlayer, setOtherPlayer] = useState<IPlayerData>(NewIPlayerData);
   const [dealer, setDealer] = useState<IDealerData>(NewIDealerData);
   const [input, setInput] = useState<string>("");
   const [finalCardCheck, setFinalCardCheck] = useState<boolean>(false);
   const [turn, setTurn] = useState<number>(2);
+  const [nextRound, setNextRound] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+
+  const sendPlayerData = () => {
+    socket.emit("send_message", { player, room });
+  };
+
+  const handleClickNextRoundButton = () => {
+    setNextRound(false);
+    resetDealer(dealer, setDealer);
+    switch (player.gameState) {
+      case GameStateEnum.WIN:
+        return setPlayerWon(player, setPlayer);
+      case GameStateEnum.DRAW:
+        return setPlayerDraw(player, setPlayer);
+      case GameStateEnum.LOOSE:
+        return setPlayerLost(player, setPlayer);
+    }
+  };
 
   const handleClickAddMoneyButton = () => {
     const moneyToAdd = Number.parseInt(input);
@@ -54,31 +85,40 @@ const MultiPlayer = () => {
   };
 
   useEffect(() => {
-    if (checkCardsAreLosing(player.cards)) {
-      setTurn(turn - 1);
-      setFinalCardCheck(false);
-      resetDealer(dealer, setDealer);
-      setPlayerLost(player, setPlayer);
-    } else {
-      if (checkCardsAreLosing(dealer.cards)) {
+    if (!nextRound) {
+      if (checkCardsAreLosing(player.cards)) {
         setTurn(turn - 1);
         setFinalCardCheck(false);
-        resetDealer(dealer, setDealer);
-        setPlayerWon(player, setPlayer);
+        setPlayer({ ...player, gameState: GameStateEnum.LOOSE });
+        setNextRound(true);
       } else {
-        if (finalCardCheck) {
-          setFinalCardCheck(false);
+        if (checkCardsAreLosing(dealer.cards)) {
           setTurn(turn - 1);
-          checkWinner(player, setPlayer, dealer, setDealer);
-        }
-        if (turn === 0) {
-          resetGame(player, setPlayer, dealer, setDealer, setTurn);
-          window.history.pushState(null, "New Page Title", "/");
-          window.location.reload();
+          setFinalCardCheck(false);
+          setPlayer({ ...player, gameState: GameStateEnum.WIN });
+          setNextRound(true);
+        } else {
+          if (finalCardCheck) {
+            setFinalCardCheck(false);
+            setTurn(turn - 1);
+            checkWinner(player, setPlayer, dealer, setDealer);
+            setNextRound(true);
+          }
+          if (turn === 0) {
+            resetGame(player, setPlayer, dealer, setDealer, setTurn);
+            window.history.pushState(null, "New Page Title", "/");
+            window.location.reload();
+            alert("GAME OVER");
+          }
         }
       }
     }
-  }, [player, dealer, finalCardCheck, turn]);
+    socket.on("receive_message", (data) => {
+      setOtherPlayer(data.player);
+      // setMessage(data.input);
+    });
+    sendPlayerData();
+  }, [player, dealer, finalCardCheck, turn, nextRound, socket]);
 
   return (
     <div className="game__window">
@@ -100,10 +140,20 @@ const MultiPlayer = () => {
           <Grid.Column width={8}>
             <Segment>
               <div className="game__block">
-                <br></br>
                 <Grid.Row>
                   <Button
-                    disabled={player.bet > 0 ? false : true}
+                    disabled={nextRound ? false : true}
+                    icon
+                    labelPosition="left"
+                    onClick={handleClickNextRoundButton}
+                  >
+                    Next round
+                    <Icon name="angle double right" />
+                  </Button>
+                </Grid.Row>
+                <Grid.Row>
+                  <Button
+                    disabled={player.bet > 0 && !nextRound ? false : true}
                     icon
                     labelPosition="left"
                     onClick={handleClickStandButton}
@@ -112,10 +162,9 @@ const MultiPlayer = () => {
                     <Icon name="hand paper outline" />
                   </Button>
                 </Grid.Row>
-                <br></br>
                 <Grid.Row>
                   <Button
-                    disabled={player.bet > 0 ? false : true}
+                    disabled={player.bet > 0 && !nextRound ? false : true}
                     icon
                     labelPosition="left"
                     onClick={handleClickHitButton}
@@ -150,6 +199,12 @@ const MultiPlayer = () => {
                 </Grid.Row>
               </div>
             </Segment>
+            <Segment>
+              <div className="game__block">
+                <Player player={otherPlayer}></Player>
+                <p>Message from other player: {message}</p>
+              </div>
+            </Segment>
           </Grid.Column>
         </Grid>
       </div>
@@ -157,4 +212,4 @@ const MultiPlayer = () => {
   );
 };
 
-export default MultiPlayer;
+export default MultiPlayerGame;

@@ -1,4 +1,4 @@
-import getCardNumbers from "../../util/randomCard";
+import getCardNumbers from "../../util/RandomCard";
 import { GameStateEnum } from "./GameStateEnum";
 
 interface IPlayerData {

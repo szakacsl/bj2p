@@ -1,4 +1,4 @@
-import IDealerData from "../../data/Dealer/DealerData";
+import IDealerData from "../../data/dealer/DealerData";
 
 interface IDealerProps {
   dealer: IDealerData | undefined;

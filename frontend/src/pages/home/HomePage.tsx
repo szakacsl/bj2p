@@ -9,10 +9,10 @@ const HomePage = () => {
     <nav className="homepage">
       <div className="homepage__button">
         <Divider />
-        <Link to={"/game"}>
+        <Link to={"/singleplayer"}>
           <Button positive>Single Player</Button>
         </Link>
-        <Link to={"/waiting-room"}>
+        <Link to={"/multiplayer"}>
           <Button negative>Multi Player</Button>
         </Link>
         <Divider />
