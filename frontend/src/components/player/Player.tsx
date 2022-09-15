@@ -8,7 +8,7 @@ const Player: React.FC<IPlayerProps> = (props: IPlayerProps) => {
   const { player } = props;
   return (
     <>
-      <h3>Player no</h3>
+      <h3>{player?.name}</h3>
       <h3>Generated cards:</h3>
       {player?.cards}
       <h3>Money:</h3>

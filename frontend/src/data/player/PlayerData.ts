@@ -10,7 +10,15 @@ interface IPlayerData {
 }
 
 export const NewIPlayerData: IPlayerData = {
-  name: "",
+  name: "Player",
+  cards: 0,
+  money: 1000,
+  bet: 0,
+  gameState: GameStateEnum.DRAW,
+};
+
+export const NewIOtherPlayerData: IPlayerData = {
+  name: "Other Player",
   cards: 0,
   money: 1000,
   bet: 0,

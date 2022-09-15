@@ -5,7 +5,10 @@ import Dealer from "../dealer/Dealer";
 import Player from "../player/Player";
 import IDealerData, { NewIDealerData } from "../../data/dealer/DealerData";
 import { GameStateEnum } from "../../data/player/GameStateEnum";
-import IPlayerData, { NewIPlayerData } from "../../data/player/PlayerData";
+import IPlayerData, {
+  NewIOtherPlayerData,
+  NewIPlayerData,
+} from "../../data/player/PlayerData";
 import {
   checkCardsAreLosing,
   checkGetNewCard,
@@ -21,6 +24,7 @@ import {
 import getGeneratedCardNumbers from "../../util/RandomCard";
 import "./MultiPlayerGame.scss";
 import { Socket } from "socket.io-client";
+import IGameStates, { NewIGameStates } from "../../data/socket/gameStates";
 
 interface IMultiPlayerProps {
   socket: Socket;
@@ -32,16 +36,17 @@ const MultiPlayerGame: React.FC<IMultiPlayerProps> = (
 ) => {
   const { socket, room } = props;
   const [player, setPlayer] = useState<IPlayerData>(NewIPlayerData);
-  const [otherPlayer, setOtherPlayer] = useState<IPlayerData>(NewIPlayerData);
+  const [otherPlayer, setOtherPlayer] =
+    useState<IPlayerData>(NewIOtherPlayerData);
   const [dealer, setDealer] = useState<IDealerData>(NewIDealerData);
+  const [otherDealer, setOtherDealer] = useState<IDealerData>(NewIDealerData);
   const [input, setInput] = useState<string>("");
   const [finalCardCheck, setFinalCardCheck] = useState<boolean>(false);
   const [turn, setTurn] = useState<number>(2);
   const [nextRound, setNextRound] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>("");
 
   const sendPlayerData = () => {
-    socket.emit("send_message", { player, room });
+    socket.emit("send_message", { player, dealer, room });
   };
 
   const handleClickNextRoundButton = () => {
@@ -61,7 +66,11 @@ const MultiPlayerGame: React.FC<IMultiPlayerProps> = (
     const moneyToAdd = Number.parseInt(input);
     if (moneyToAdd <= player.money) {
       setPlayerForGame(player, setPlayer, moneyToAdd);
-      setDealerForGame(dealer, setDealer);
+      if (otherDealer.cards === 0) {
+        setDealerForGame(dealer, setDealer);
+      } else {
+        setDealer(otherDealer);
+      }
     }
   };
 
@@ -72,10 +81,14 @@ const MultiPlayerGame: React.FC<IMultiPlayerProps> = (
 
   const handleClickStandButton = () => {
     let dealerCards = dealer.cards;
-    while (checkGetNewCard(dealerCards)) {
-      dealerCards += getGeneratedCardNumbers();
+    if (dealerCards === otherDealer.cards) {
+      while (checkGetNewCard(dealerCards)) {
+        dealerCards += getGeneratedCardNumbers();
+      }
+      setDealer({ ...dealer, cards: dealerCards });
+    } else {
+      setDealer(otherDealer);
     }
-    setDealer({ ...dealer, cards: dealerCards });
     setFinalCardCheck(true);
   };
 
@@ -115,10 +128,10 @@ const MultiPlayerGame: React.FC<IMultiPlayerProps> = (
     }
     socket.on("receive_message", (data) => {
       setOtherPlayer(data.player);
-      // setMessage(data.input);
+      setOtherDealer(data.dealer);
     });
     sendPlayerData();
-  }, [player, dealer, finalCardCheck, turn, nextRound, socket]);
+  }, [player, finalCardCheck, turn, socket]);
 
   return (
     <div className="game__window">
@@ -202,7 +215,6 @@ const MultiPlayerGame: React.FC<IMultiPlayerProps> = (
             <Segment>
               <div className="game__block">
                 <Player player={otherPlayer}></Player>
-                <p>Message from other player: {message}</p>
               </div>
             </Segment>
           </Grid.Column>
