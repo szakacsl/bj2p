@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Button, Divider, Input } from "semantic-ui-react";
 import { Socket } from "socket.io-client";
 import { generateRoomKey } from "../../util/GenerateRoomKey";
@@ -42,6 +42,7 @@ const WaitingRoom: React.FC<IWaitingRoomProps> = (props: IWaitingRoomProps) => {
       joinRoom();
     }
     // console.log(room);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room]);
 
   return (

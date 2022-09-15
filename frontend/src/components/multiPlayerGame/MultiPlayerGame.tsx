@@ -24,7 +24,6 @@ import {
 import getGeneratedCardNumbers from "../../util/RandomCard";
 import "./MultiPlayerGame.scss";
 import { Socket } from "socket.io-client";
-import IGameStates, { NewIGameStates } from "../../data/socket/gameStates";
 
 interface IMultiPlayerProps {
   socket: Socket;
@@ -131,6 +130,7 @@ const MultiPlayerGame: React.FC<IMultiPlayerProps> = (
       setOtherDealer(data.dealer);
     });
     sendPlayerData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player, finalCardCheck, turn, socket]);
 
   return (
